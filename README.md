@@ -90,4 +90,4 @@ cross-validation function to cross-validate `shrink_mode` and `lmb` without
 this performance loss.
 
 ## Experiments
-To reproduce the experiments from the paper, see 
+To reproduce the experiments from the paper, see [experiments/README.md](experiments/README.md).
