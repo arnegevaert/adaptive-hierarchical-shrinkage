@@ -58,9 +58,11 @@ where $g(t_{l-1})$ is some function of the node $t_{l-1}$. Classical hierarchica
         - `"hs_entropy"`: Adaptive Hierarchical Shrinkage with added entropy term: $g(t_{l-1}) = \lambda H(t_{l-1})$.
         - `"hs_log_cardinality"`: Adaptive Hierarchical Shrinkage with log of cardinality term: $g(t_{l-1}) = \lambda \log C(t_{l-1})$ where $C(t)$ is the number of unique values in $t$.
         - `"hs_permutation"`: Adaptive Hierarchical Shrinkage with:
+        
         ```math
         g(t_{l-1}) = \frac{1}{\alpha(t_{l-1})}$, with $\alpha(t_{l-1}) = 1 - \frac{\Delta_\mathcal{I}(t_{l-1}, { }_\pi x(t_{l-1})) + \epsilon}{\Delta_\mathcal{I}(t_{l-1}, x(t_{l-1}))+ \epsilon}
         ```
+        
         - `"hs_global_permutation"`: Same as `"hs_permutation"`, but the data is permuted only once for the full dataset rather than once in each node.
     - `lmb`: $\lambda$ hyperparameter
     - `random_state`: random state for reproducibility
