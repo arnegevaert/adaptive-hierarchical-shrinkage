@@ -52,20 +52,21 @@ where $g(t_{l-1})$ is some function of the node $t_{l-1}$. Classical hierarchica
 
 - `__init__()` parameters:
     - `base_estimator`: the estimator around which we "wrap" hierarchical shrinkage. This should be a tree-based estimator: `DecisionTreeClassifier`, `RandomForestClassifier`, ... (analogous for `Regressor`s)
+    - `lmb`: $\lambda$ hyperparameter
+    - `random_state`: random state for reproducibility
     - `shrink_mode`: 6 options:
         - `"no_shrinkage"`: dummy value. This setting will not influence the `base_estimator` in any way, and is equivalent to just using the `base_estimator` by itself. Added for easy comparison between different modes of shrinkage and no shrinkage at all.
         - `"hs"`: classical Hierarchical Shrinkage (from Agarwal et al. 2022): $g(t_{l-1}) = \lambda$.
         - `"hs_entropy"`: Adaptive Hierarchical Shrinkage with added entropy term: $g(t_{l-1}) = \lambda H(t_{l-1})$.
         - `"hs_log_cardinality"`: Adaptive Hierarchical Shrinkage with log of cardinality term: $g(t_{l-1}) = \lambda \log C(t_{l-1})$ where $C(t)$ is the number of unique values in $t$.
-        - `"hs_permutation"`: Adaptive Hierarchical Shrinkage with:
-        
-```math
-g(t_{l-1}) = \frac{1}{\alpha(t_{l-1})}$, with $\alpha(t_{l-1}) = 1 - \frac{\Delta_\mathcal{I}(t_{l-1}, { }_\pi x(t_{l-1})) + \epsilon}{\Delta_\mathcal{I}(t_{l-1}, x(t_{l-1}))+ \epsilon}
-```
-
         - `"hs_global_permutation"`: Same as `"hs_permutation"`, but the data is permuted only once for the full dataset rather than once in each node.
-    - `lmb`: $\lambda$ hyperparameter
-    - `random_state`: random state for reproducibility
+        - `"hs_permutation"`: Adaptive Hierarchical Shrinkage with:
+```math
+\begin{aligned}
+g(t_{l-1}) &= \frac{1}{\alpha(t_{l-1})}\\
+\alpha(t_{l-1}) &= 1 - \frac{\Delta_\mathcal{I}(t_{l-1}, { }_\pi x(t_{l-1})) + \epsilon}{\Delta_\mathcal{I}(t_{l-1}, x(t_{l-1}))+ \epsilon}
+\end{aligned}
+```
 - `reshrink(shrink_mode, lmb, X)`: changes the shrinkage mode and/or lambda value in the shrinkage process. Calling `reshrink` with a given value of `shrink_mode` and/or `lmb` on an existing model is equivalent to fitting a new model with the same base estimator but the new, given values for `shrink_mode` and/or `lmb`. This method can avoid redundant computations in the shrinkage process, so can be more efficient than re-fitting a new `ShrinkageClassifier` or `ShrinkageRegressor`.
 - Other functions: `fit(X, y)`, `predict(X)`, `predict_proba(X)`, `score(X, y)` work just like with any other `sklearn` estimator.
 
