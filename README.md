@@ -6,20 +6,34 @@ This directory contains an implementation of Adaptive Hierarchical Shrinkage tha
 ## Installation
 ### `adhs` Package
 The `adhs` package, which contains the implementations of
-Adaptive Hierarchical Shrinkage, can be installed using:
+Adaptive Hierarchical Shrinkage, can be installed from [PyPI](https://pypi.org/project/adhs/):
+
+```bash
+$ pip install adhs
 ```
-pip install .
+
+Alternatively, the package can be installed by cloning:
 ```
+$ git clone git@github.com:arnegevaert/adaptive-hierarchical-shrinkage.git
+$ cd adaptive-hierarchical-shrinkage
+$ pip install .
+```
+Note that this will install the version corresponding to the latest commit on the
+master branch, which may or may not be stable.
 
 ### Experiments
 To be able to run the scripts in the `experiments` directory, some extra
 requirements are needed. These can be installed in a new conda
 environment as follows:
 ```
-conda create -n shrinkage python=3.10
-conda activate shrinkage
-pip install .[experiments]
+$ git clone git@github.com:arnegevaert/adaptive-hierarchical-shrinkage.git
+$ cd adaptive-hierarchical-shrinkage
+$ conda create -n shrinkage python=3.10
+$ conda activate shrinkage
+$ pip install .[experiments]
 ```
+
+For more info on reproducing the experiments, see [experiments/README.md](experiments/README.md).
 
 ## Basic API
 This package exports 2 classes and 1 method:
@@ -29,9 +43,11 @@ This package exports 2 classes and 1 method:
 
 ### `ShrinkageClassifier` and `ShrinkageRegressor`
 Both classes inherit from `ShrinkageEstimator`, which extends `sklearn.base.BaseEstimator`. Adaptive hierarchical shrinkage can be summarized as follows:
+
 $$
 \hat{f}(\mathbf{x}) = \mathbb{E}_{t_0}[y] + \sum_{l=1}^L\frac{\mathbb{E}_{t_l}[y] - \mathbb{E}_{t_{l-1}}[y]}{1 + \frac{g(t_{l-1})}{N(t_{l-1})}}
 $$
+
 where $g(t_{l-1})$ is some function of the node $t_{l-1}$. Classical hierarchical shrinkage (Agarwal et al. 2022) corresponds to $g(t_{l-1}) = \lambda$, where $\lambda$ is a chosen constant.
 
 - `__init__()` parameters:
@@ -66,3 +82,6 @@ model. However, this **will** retrain the decision tree or random forest, which
 leads to unnecessary performance loss. This notebook shows how you can use our
 cross-validation function to cross-validate `shrink_mode` and `lmb` without
 this performance loss.
+
+## Experiments
+To reproduce the experiments from the paper, see 

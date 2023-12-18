@@ -30,16 +30,16 @@ def plot_importances(result, relevance):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input-file", type=str, default="output/importances.pkl")
-    parser.add_argument("--output-dir", type=str, default="plot")
+    parser.add_argument("results_file", type=str)
+    parser.add_argument("out_dir", type=str)
     args = parser.parse_args()
 
-    if not os.path.isdir(args.output_dir):
-        os.makedirs(args.output_dir)
+    if not os.path.isdir(args.out_dir):
+        os.makedirs(args.out_dir)
 
-    result = joblib.load(args.input_file)
+    result = joblib.load(args.results_file)
     for relevance in result.keys():
         fig, ax = plot_importances(result, relevance)
 
         fig.savefig(os.path.join(
-            args.output_dir, f"importances_{relevance}.png"))
+            args.out_dir, f"importances_{relevance}.png"))
