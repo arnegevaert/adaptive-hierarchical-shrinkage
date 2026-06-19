@@ -42,6 +42,7 @@ experiments = [
     "imodels",
     "pmlb",
     "shap >= 0.42.0",
+    "adhs",
 ]
 
 [project.urls]
@@ -58,3 +59,11 @@ push = false
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "adhs/__init__.py" = ["{version}"]
+
+[tool.uv.workspace]
+members = [
+    ".",
+]
+
+[tool.uv.sources]
+adhs = { workspace = true }
