@@ -40,4 +40,3 @@ SHRINKAGE_TYPES = [
     "hs_global_permutation",
 ]
 
-EXPERIMENTS = ["classification_dt", "classification_rf", "regression"]

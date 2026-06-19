@@ -4,23 +4,16 @@ from sklearn.metrics import roc_auc_score, r2_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 import numpy as np
+import yaml
+from pathlib import Path
 
-from _util import CLF_DATASETS, REG_DATASETS, SHRINKAGE_TYPES, EXPERIMENTS
 from _run_experiment import run_experiment
 
+EXPERIMENTS = ["classification_dt", "classification_rf", "regression"]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--n-jobs", type=int, required=True)
-    parser.add_argument("--n-replications", type=int, required=True)
-    parser.add_argument("--out-dir", type=str, required=True)
-    parser.add_argument(
-        "--shrink-modes",
-        type=str,
-        nargs="+",
-        choices=SHRINKAGE_TYPES,
-        default=SHRINKAGE_TYPES,
-    )
     parser.add_argument(
         "--experiments",
         type=str,
@@ -30,48 +23,68 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    lambdas = [0.0, 0.1, 1.0, 10.0, 25.0, 50.0, 100.0]
+    with open("config/experiments.yaml", "r") as f:
+        config = yaml.safe_load(f)
+
+    n_replications = config["n_replications"]
+    output_dir = Path(config["output_dir"]) / "general_performance"
+    data_dir = Path(config["data_dir"])
+    shrink_modes = config["shrink_modes"]
+    clf_datasets = config["datasets"]["classification"]
+    reg_datasets = config["datasets"]["regression"]
+    lambdas = config["lambdas"]
+
+    print(f"Running experiments: {args.experiments}")
+    print(f"Number of replications: {n_replications}")
+    print(f"Shrink modes: {shrink_modes}")
+    print(f"Classification datasets: {list(clf_datasets.keys())}")
+    print(f"Regression datasets: {list(reg_datasets.keys())}")
+    print(f"Lambdas: {lambdas}")
+
     np.seterr(all="raise")
 
-    if not os.path.exists(args.out_dir):
-        os.makedirs(args.out_dir)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     if "classification_dt" in args.experiments:
         run_experiment(
-            CLF_DATASETS,
+            clf_datasets,
             DecisionTreeClassifier(),
-            args.shrink_modes,
+            shrink_modes,
             lambdas,
             "classification",
             roc_auc_score,
             args.n_jobs,
-            args.n_replications,
-            args.out_dir,
+            n_replications,
+            output_dir,
+            data_dir,
             "classification_dt",
         )
     if "classification_rf" in args.experiments:
         run_experiment(
-            CLF_DATASETS,
+            clf_datasets,
             RandomForestClassifier(),
-            args.shrink_modes,
+            shrink_modes,
             lambdas,
             "classification",
             roc_auc_score,
             args.n_jobs,
-            args.n_replications,
-            args.out_dir,
+            n_replications,
+            output_dir,
+            data_dir,
             "classification_rf",
         )
     if "regression" in args.experiments:
         run_experiment(
-            REG_DATASETS,
+            reg_datasets,
             DecisionTreeRegressor(),
-            args.shrink_modes,
+            shrink_modes,
             lambdas,
             "regression",
             r2_score,
             args.n_jobs,
-            args.n_replications,
-            args.out_dir,
+            n_replications,
+            output_dir,
+            data_dir,
             "regression",
         )

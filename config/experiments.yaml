@@ -1,0 +1,64 @@
+datasets:
+  classification:
+    heart:
+      id: heart
+      source: imodels
+    breast-cancer:
+      id: breast_cancer
+      source: imodels
+    haberman:
+      id: haberman
+      source: imodels
+    ionosphere:
+      id: ionosphere
+      source: pmlb
+    diabetes-clf:
+      id: 37
+      source: openml
+    german:
+      id: 31
+      source: openml
+    juvenile:
+      id: juvenile_clean
+      source: imodels
+    recidivism:
+      id: compas_two_year_clean
+      source: imodels
+  regression:
+    friedman1:
+      id: friedman1
+      source: synthetic
+    friedman3:
+      id: friedman3
+      source: synthetic
+    diabetes-reg:
+      id: diabetes_regr
+      source: sklearn
+    geographical-music:
+      id: 4544
+      source: openml
+    red-wine:
+      id: 40691
+      source: openml
+    abalone:
+      id: 183
+      source: openml
+    satellite-image:
+      id: 294_satellite_image
+      source: pmlb
+    california-housing:
+      id: california_housing
+      source: sklearn
+shrink_modes:
+  - no_shrinkage
+  - hs
+  - hs_entropy
+  - hs_log_cardinality
+  - hs_permutation
+  - hs_global_permutation
+#lambdas: [0.0, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0, 75.0, 100.0]
+lambdas: [0.0, 0.1]
+#replications: 100
+n_replications: 1
+output_dir: out/
+data_dir: data/

@@ -1,6 +1,8 @@
 import os
-from typing import Callable, List, Tuple, Dict
+from pathlib import Path
+from typing import Callable, Dict, List
 
+import numpy as np
 import pandas as pd
 from _run_single_replication import run_single_replication
 from _util import TreeBasedModel
@@ -10,7 +12,7 @@ from tqdm import tqdm
 
 
 def run_experiment(
-    datasets: List[Tuple[str, str, str]],
+    datasets: Dict[str, Dict[str, str]],
     base_estimator: TreeBasedModel,
     shrink_modes: List[str],
     lambdas: List[float],
@@ -18,22 +20,21 @@ def run_experiment(
     score_fn: Callable,
     n_jobs: int,
     n_replications: int,
-    out_dir: str,
+    out_dir: Path,
+    data_dir: Path,
     exp_name: str,
 ):
-    prog = tqdm(datasets)
+    prog = tqdm(datasets.keys())
     prog.set_description(f"Running {exp_name}")
 
     out_path = os.path.join(out_dir, exp_name)
     if not os.path.exists(out_path):
         os.makedirs(out_path)
 
-    for ds_name, ds_id, ds_source in prog:
+    for ds_name in prog:
         prog.set_postfix({"dataset": ds_name})
-        X, y, _ = get_clean_dataset(ds_id, ds_source)
-
-        if ds_name == "red-wine":
-            y = y.astype(int)
+        X = np.loadtxt(os.path.join(data_dir, f"{ds_name}_X.csv"), delimiter=",")
+        y = np.loadtxt(os.path.join(data_dir, f"{ds_name}_y.csv"), delimiter=",")
 
         # Each call to run_single_replication will return a list of records
         # Each record corresponds to a line in a CSV file
@@ -52,9 +53,7 @@ def run_experiment(
                     )
                 )
         else:
-            results = Parallel(
-                n_jobs=n_jobs, verbose=0
-            )(
+            results = Parallel(n_jobs=n_jobs, verbose=0)(
                 delayed(run_single_replication)(
                     X,
                     y,
