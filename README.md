@@ -6,20 +6,34 @@ This directory contains an implementation of Adaptive Hierarchical Shrinkage tha
 ## Installation
 ### `adhs` Package
 The `adhs` package, which contains the implementations of
-Adaptive Hierarchical Shrinkage, can be installed using:
+Adaptive Hierarchical Shrinkage, can be installed from [PyPI](https://pypi.org/project/adhs/):
+
+```bash
+$ pip install adhs
 ```
-pip install .
+
+Alternatively, the package can be installed by cloning:
 ```
+$ git clone git@github.com:arnegevaert/adaptive-hierarchical-shrinkage.git
+$ cd adaptive-hierarchical-shrinkage
+$ pip install .
+```
+Note that this will install the version corresponding to the latest commit on the
+master branch, which may or may not be stable.
 
 ### Experiments
 To be able to run the scripts in the `experiments` directory, some extra
 requirements are needed. These can be installed in a new conda
 environment as follows:
 ```
-conda create -n shrinkage python=3.10
-conda activate shrinkage
-pip install .[experiments]
+$ git clone git@github.com:arnegevaert/adaptive-hierarchical-shrinkage.git
+$ cd adaptive-hierarchical-shrinkage
+$ conda create -n shrinkage python=3.10
+$ conda activate shrinkage
+$ pip install .[experiments]
 ```
+
+For more info on reproducing the experiments, see [experiments/README.md](experiments/README.md).
 
 ## Basic API
 This package exports 2 classes and 1 method:
@@ -29,22 +43,30 @@ This package exports 2 classes and 1 method:
 
 ### `ShrinkageClassifier` and `ShrinkageRegressor`
 Both classes inherit from `ShrinkageEstimator`, which extends `sklearn.base.BaseEstimator`. Adaptive hierarchical shrinkage can be summarized as follows:
-$$
+
+```math
 \hat{f}(\mathbf{x}) = \mathbb{E}_{t_0}[y] + \sum_{l=1}^L\frac{\mathbb{E}_{t_l}[y] - \mathbb{E}_{t_{l-1}}[y]}{1 + \frac{g(t_{l-1})}{N(t_{l-1})}}
-$$
+```
+
 where $g(t_{l-1})$ is some function of the node $t_{l-1}$. Classical hierarchical shrinkage (Agarwal et al. 2022) corresponds to $g(t_{l-1}) = \lambda$, where $\lambda$ is a chosen constant.
 
 - `__init__()` parameters:
     - `base_estimator`: the estimator around which we "wrap" hierarchical shrinkage. This should be a tree-based estimator: `DecisionTreeClassifier`, `RandomForestClassifier`, ... (analogous for `Regressor`s)
+    - `lmb`: $\lambda$ hyperparameter
+    - `random_state`: random state for reproducibility
     - `shrink_mode`: 6 options:
         - `"no_shrinkage"`: dummy value. This setting will not influence the `base_estimator` in any way, and is equivalent to just using the `base_estimator` by itself. Added for easy comparison between different modes of shrinkage and no shrinkage at all.
         - `"hs"`: classical Hierarchical Shrinkage (from Agarwal et al. 2022): $g(t_{l-1}) = \lambda$.
         - `"hs_entropy"`: Adaptive Hierarchical Shrinkage with added entropy term: $g(t_{l-1}) = \lambda H(t_{l-1})$.
         - `"hs_log_cardinality"`: Adaptive Hierarchical Shrinkage with log of cardinality term: $g(t_{l-1}) = \lambda \log C(t_{l-1})$ where $C(t)$ is the number of unique values in $t$.
-        - `"hs_permutation"`: Adaptive Hierarchical Shrinkage with $g(t_{l-1}) = \frac{1}{\alpha(t_{l-1})}$, with $\alpha(t_{l-1}) = 1 - \frac{\Delta_\mathcal{I}(t_{l-1}, { }_\pi x(t_{l-1})) + \epsilon}{\Delta_\mathcal{I}(t_{l-1}, x(t_{l-1}))+ \epsilon}$
         - `"hs_global_permutation"`: Same as `"hs_permutation"`, but the data is permuted only once for the full dataset rather than once in each node.
-    - `lmb`: $\lambda$ hyperparameter
-    - `random_state`: random state for reproducibility
+        - `"hs_permutation"`: Adaptive Hierarchical Shrinkage with:
+```math
+\begin{aligned}
+g(t_{l-1}) &= \frac{1}{\alpha(t_{l-1})}\\
+\alpha(t_{l-1}) &= 1 - \frac{\Delta_\mathcal{I}(t_{l-1}, { }_\pi x(t_{l-1})) + \epsilon}{\Delta_\mathcal{I}(t_{l-1}, x(t_{l-1}))+ \epsilon}
+\end{aligned}
+```
 - `reshrink(shrink_mode, lmb, X)`: changes the shrinkage mode and/or lambda value in the shrinkage process. Calling `reshrink` with a given value of `shrink_mode` and/or `lmb` on an existing model is equivalent to fitting a new model with the same base estimator but the new, given values for `shrink_mode` and/or `lmb`. This method can avoid redundant computations in the shrinkage process, so can be more efficient than re-fitting a new `ShrinkageClassifier` or `ShrinkageRegressor`.
 - Other functions: `fit(X, y)`, `predict(X)`, `predict_proba(X)`, `score(X, y)` work just like with any other `sklearn` estimator.
 
@@ -66,3 +88,6 @@ model. However, this **will** retrain the decision tree or random forest, which
 leads to unnecessary performance loss. This notebook shows how you can use our
 cross-validation function to cross-validate `shrink_mode` and `lmb` without
 this performance loss.
+
+## Experiments
+To reproduce the experiments from the paper, see [experiments/README.md](experiments/README.md).
