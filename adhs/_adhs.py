@@ -1,17 +1,17 @@
 from abc import abstractmethod
 from copy import deepcopy
-
-import numpy as np
-from numpy import typing as npt
-import scipy
-from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin, clone
-from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.utils.validation import check_is_fitted
-from sklearn.utils.estimator_checks import check_estimator
 from typing import Dict, List
 
+import numpy as np
+import scipy
+from numpy import typing as npt
+from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin, clone
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.utils.estimator_checks import check_estimator
+from sklearn.utils.validation import check_is_fitted
+
 from ._alpha import compute_alpha, compute_global_alpha
-from ._util import normalize_value, check_fit_arguments
+from ._util import check_fit_arguments, normalize_value
 
 
 class ShrinkageEstimator(BaseEstimator):
@@ -22,7 +22,14 @@ class ShrinkageEstimator(BaseEstimator):
         lmb: float = 1,
         random_state=None,
     ):
-        assert shrink_mode in ["hs", "hs_entropy", "hs_log_cardinality", "hs_permutation", "hs_global_permutation", "no_shrinkage"]
+        assert shrink_mode in [
+            "hs",
+            "hs_entropy",
+            "hs_log_cardinality",
+            "hs_permutation",
+            "hs_global_permutation",
+            "no_shrinkage",
+        ]
         self.base_estimator = base_estimator
         self.shrink_mode = shrink_mode
         self.lmb = lmb
@@ -47,9 +54,7 @@ class ShrinkageEstimator(BaseEstimator):
         raise NotImplemented
 
     def fit(self, X, y, **kwargs):
-        X, y = self._validate_arguments(
-            X, y, kwargs.pop("feature_names", None)
-        )
+        X, y = self._validate_arguments(X, y, kwargs.pop("feature_names", None))
 
         if self.base_estimator is not None:
             self.estimator_ = clone(self.base_estimator)
@@ -111,9 +116,7 @@ class ShrinkageEstimator(BaseEstimator):
                 # This model is a single decision tree
                 # Simply wrap the prediction in an array to maintain
                 # compatibility with RF models
-                return np.array(
-                    [self.estimator_.predict(X, *args, **kwargs)]
-                )
+                return np.array([self.estimator_.predict(X, *args, **kwargs)])
         return self.estimator_.predict(X, *args, **kwargs)
 
     def score(self, X, y, *args, **kwargs):
@@ -259,9 +262,7 @@ class ShrinkageEstimator(BaseEstimator):
             self.node_values[value_type] = node_values
         else:  # Single tree
             self.node_values[value_type] = [
-                self._compute_node_values_rec(
-                    self.estimator_, X, y, value_type
-                )
+                self._compute_node_values_rec(self.estimator_, X, y, value_type)
             ]
 
     def _shrink_tree_rec(
@@ -311,12 +312,8 @@ class ShrinkageEstimator(BaseEstimator):
 
         # If not leaf: recurse
         if not (left == -1 and right == -1):
-            self._shrink_tree_rec(
-                dt, dt_idx, left, node, value, cum_sum.copy()
-            )
-            self._shrink_tree_rec(
-                dt, dt_idx, right, node, value, cum_sum.copy()
-            )
+            self._shrink_tree_rec(dt, dt_idx, left, node, value, cum_sum.copy())
+            self._shrink_tree_rec(dt, dt_idx, right, node, value, cum_sum.copy())
 
     def _validate_arguments(self, X, y, feature_names):
         if self.shrink_mode not in [
@@ -325,15 +322,14 @@ class ShrinkageEstimator(BaseEstimator):
             "hs_log_cardinality",
             "hs_permutation",
             "hs_global_permutation",
-            "no_shrinkage"
+            "no_shrinkage",
         ]:
             raise ValueError("Invalid choice for shrink_mode")
-        X, y, feature_names = check_fit_arguments(
-            X, y, feature_names=feature_names
-        )
+        X, y, feature_names = check_fit_arguments(X, y, feature_names=feature_names)
         self.n_features_in_ = X.shape[1]
         self.feature_names_in_ = feature_names
         return X, y
+
 
 class ShrinkageClassifier(ShrinkageEstimator, ClassifierMixin):
     def get_default_estimator(self):
@@ -359,10 +355,9 @@ class ShrinkageClassifier(ShrinkageEstimator, ClassifierMixin):
                 # This model is a single decision tree
                 # Simply wrap the prediction in an array to maintain
                 # compatibility with RF models
-                return np.array(
-                    [self.estimator_.predict_proba(X, *args, **kwargs)]
-                )
+                return np.array([self.estimator_.predict_proba(X, *args, **kwargs)])
         return self.estimator_.predict_proba(X, *args, **kwargs)
+
 
 class ShrinkageRegressor(ShrinkageEstimator, RegressorMixin):
     def get_default_estimator(self):
