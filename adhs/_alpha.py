@@ -1,21 +1,26 @@
-from ._criterion import _CRITERION_FNS
-from ._impurity import impurity_reduction, best_impurity_reduction
 import numpy as np
 from numpy import typing as npt
 
+from ._criterion import _CRITERION_FNS
+from ._impurity import best_impurity_reduction, impurity_reduction
 
-def compute_alpha(X_cond, y_cond, feature, threshold, criterion) -> npt.NDArray:
+
+def compute_alpha(X_cond, y_cond, feature, threshold, criterion, num_permutations=10) -> npt.NDArray:
     # Compute original impurity reduction
     criterion_fn = _CRITERION_FNS[criterion]
     orig_impurity_reduction = impurity_reduction(
         criterion_fn, X_cond, y_cond, feature, threshold
     )
 
-    # Compute best impurity reduction for the shuffled labels
-    y_shuffled = np.random.permutation(y_cond)
-    best_shuffled_impurity_reduction = best_impurity_reduction(
-        X_cond, y_shuffled, feature, criterion
-    )
+    # Compute average best impurity reduction for the shuffled labels
+    shuffled_impurity_reductions = []
+    for _ in range(num_permutations):
+        y_shuffled = np.random.permutation(y_cond)
+        best_shuffled_impurity_reduction = best_impurity_reduction(
+            X_cond, y_shuffled, feature, criterion
+        )
+        shuffled_impurity_reductions.append(best_shuffled_impurity_reduction)
+    best_shuffled_impurity_reduction = np.mean(shuffled_impurity_reductions)
 
     # Compute alpha
     # Adding \epsilon to both terms to prevent extreme values of alpha
