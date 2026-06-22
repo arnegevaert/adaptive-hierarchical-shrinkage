@@ -43,8 +43,7 @@ if __name__ == "__main__":
 
     np.seterr(all="raise")
 
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
 
     if "classification_dt" in args.experiments:
         run_experiment(
