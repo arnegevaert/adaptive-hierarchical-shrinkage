@@ -11,5 +11,4 @@
 unset OMP_PROC_BIND
 export OMP_NUM_THREADS=1
 
-#uv run general_performance/run.py --n-replications 100 --n-jobs 32 --out-dir output/general_performance
-uv run general_performance/run.py --n-replications 1 --n-jobs 1 --out-dir output/general_performance
+uv run experiments/general_performance/run.py --n-jobs 32 --experiments classification_rf
