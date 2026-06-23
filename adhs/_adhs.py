@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from copy import deepcopy
 from typing import Dict, List
+import logging
 
 import numpy as np
 import scipy
@@ -20,6 +21,7 @@ class ShrinkageEstimator(BaseEstimator):
         base_estimator: BaseEstimator | None = None,
         shrink_mode: str = "hs",
         lmb: float = 1,
+        num_permutations: int = 10,
         random_state=None,
     ):
         assert shrink_mode in [
@@ -34,6 +36,13 @@ class ShrinkageEstimator(BaseEstimator):
         self.shrink_mode = shrink_mode
         self.lmb = lmb
         self.random_state = random_state
+        self.num_permutations = num_permutations
+        
+        if self.num_permutations != 10 and self.shrink_mode not in ["hs_permutation"]:\
+            logging.warning(
+                "num_permutations is only used for hs_permutation shrinkage mode. "
+                "For other shrinkage modes, it will be ignored."
+            )
 
         self.node_values: Dict[str, List | None] = {
             "entropy": None,
@@ -205,7 +214,7 @@ class ShrinkageEstimator(BaseEstimator):
                 values[node] = np.log(len(counts))
             elif value_type == "alpha":
                 values[node] = compute_alpha(
-                    X_cond, y_cond, feature, threshold, criterion
+                    X_cond, y_cond, feature, threshold, criterion, self.num_permutations
                 )
             elif value_type == "global_alpha":
                 values[node] = compute_global_alpha(

@@ -5,7 +5,7 @@ from ._criterion import _CRITERION_FNS
 from ._impurity import best_impurity_reduction, impurity_reduction
 
 
-def compute_alpha(X_cond, y_cond, feature, threshold, criterion, num_permutations=10) -> npt.NDArray:
+def compute_alpha(X_cond, y_cond, feature, threshold, criterion, num_permutations) -> npt.NDArray:
     # Compute original impurity reduction
     criterion_fn = _CRITERION_FNS[criterion]
     orig_impurity_reduction = impurity_reduction(
