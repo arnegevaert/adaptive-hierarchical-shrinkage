@@ -12,10 +12,10 @@ authors = [
     { name = "Markus Loecher" },
     { name = "Bastian Pfeifer" }
 ]
-license = { file = "LICENSE" }
+license-files = [ "LICENSE" ]
+license = "MIT"
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.13",
 ]
