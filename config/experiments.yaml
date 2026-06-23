@@ -55,7 +55,6 @@ shrink_modes:
   - hs_entropy
   - hs_log_cardinality
   - hs_permutation
-  - hs_global_permutation
 #lambdas: [0.0, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0, 75.0, 100.0]
 lambdas: [0.0, 0.1]
 #n_replications: 100
