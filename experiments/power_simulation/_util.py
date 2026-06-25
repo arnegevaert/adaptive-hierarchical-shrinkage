@@ -17,4 +17,3 @@ SHRINKAGE_TYPES = [
     "hs_global_permutation",
 ]
 
-EXPERIMENTS = ["strobl_rf", "strobl_dt"]

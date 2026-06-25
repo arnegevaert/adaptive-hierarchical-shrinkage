@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Tuple, List, Dict
 from tqdm import trange
 import joblib
@@ -14,7 +15,7 @@ def run_experiment(
     base_estimator: TreeBasedModel,
     n_jobs: int,
     n_replications: int,
-    out_dir: str,
+    out_dir: Path,
     exp_name: str,
 ):
     out_path = os.path.join(out_dir, exp_name)
