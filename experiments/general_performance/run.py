@@ -26,13 +26,13 @@ if __name__ == "__main__":
     with open("config/experiments.yaml", "r") as f:
         config = yaml.safe_load(f)
 
-    n_replications = config["n_replications"]
     output_dir = Path(config["output_dir"]) / "general_performance"
     data_dir = Path(config["data_dir"])
     shrink_modes = config["shrink_modes"]
     clf_datasets = config["datasets"]["classification"]
     reg_datasets = config["datasets"]["regression"]
-    lambdas = config["lambdas"]
+    lambdas = config["general_performance"]["lambdas"]
+    n_replications = config["general_performance"]["n_replications"]
 
     print(f"Running experiments: {args.experiments}")
     print(f"Number of replications: {n_replications}")
