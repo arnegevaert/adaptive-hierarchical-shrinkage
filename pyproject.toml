@@ -17,7 +17,6 @@ license = "MIT"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
     "numpy >= 1.23.0,<2.0.0",
@@ -25,7 +24,7 @@ dependencies = [
     "pandas >= 2.3.3",
     "scikit-learn >= 1.2.1",
 ]
-requires-python = ">=3.13"
+requires-python = "==3.10.*"
 
 [tool.setuptools]
 packages = ["adhs"]
@@ -41,7 +40,8 @@ experiments = [
     "ipykernel",
     "imodels",
     "pmlb",
-    "shap >= 0.42.0",
+    "shap == 0.42.0",
+    "scikit-learn == 1.2.*",
     "adhs",
 ]
 

@@ -34,7 +34,7 @@ if __name__ == "__main__":
                 y="ROC AUC" if "ROC AUC" in total_df.columns else "R2",
                 hue="shrink_mode",
                 ax=ax,
-                notch=True,
+                notch=False,
                 showcaps=False,
                 flierprops={"marker": "x"},
             )
