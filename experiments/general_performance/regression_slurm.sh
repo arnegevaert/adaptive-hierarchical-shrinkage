@@ -4,8 +4,8 @@
 #SBATCH --time=8:00:00
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=32
-#SBATCH --output=logs/adhs_general_performance_%j.out
-#SBATCH --error=logs/adhs_general_performance_%j.err
+#SBATCH --output=logs/adhs_general_performance_regression_%j.out
+#SBATCH --error=logs/adhs_general_performance_regression_%j.err
 
 # Make sure joblib works
 unset OMP_PROC_BIND
