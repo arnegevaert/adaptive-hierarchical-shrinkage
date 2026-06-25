@@ -26,6 +26,9 @@ if __name__ == "__main__":
                     df = pd.read_csv(os.path.join(results_dir, subdir, filename))
                     df["dataset"] = ds_name
                     dfs.append(df)
+            if len(dfs) == 0:
+                print(f"No CSV files found in {results_dir}/{subdir}. Skipping...")
+                continue
             total_df = pd.concat(dfs, ignore_index=True)
             fig, ax = plt.subplots(figsize=(10, 6))
             sns.boxplot(
